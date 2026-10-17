@@ -153,3 +153,4 @@ When you get an error on a Supabase-related request, for example an error code f
 
 - **Skill Feedback** → [references/skill-feedback.md](references/skill-feedback.md)
   **MUST read when** the user reports that this skill gave incorrect guidance or is missing information.
+hi
