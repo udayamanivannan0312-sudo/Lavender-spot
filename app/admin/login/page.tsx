@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ShieldCheck, Lock, Mail } from 'lucide-react';
-import { getConfiguredAdminEmails } from '@/lib/admin-emails';
+import { DEFAULT_ADMIN_EMAIL } from '@/lib/admin-emails';
 
-const configuredAdminEmail = getConfiguredAdminEmails(process.env.NEXT_PUBLIC_ADMIN_EMAIL)[0] || '';
+const configuredAdminEmail = DEFAULT_ADMIN_EMAIL;
 
 export default function AdminLoginPage() {
   const router = useRouter();

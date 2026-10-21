@@ -16,9 +16,6 @@ import {
   X,
   ShieldCheck,
 } from 'lucide-react';
-import { getConfiguredAdminEmails } from '@/lib/admin-emails';
-
-const ADMIN_EMAILS = getConfiguredAdminEmails(process.env.NEXT_PUBLIC_ADMIN_EMAIL);
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -34,23 +31,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
 
       try {
-        const supabase = createClient();
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-        if (userError || !user) {
-          router.replace('/admin/login');
-          return;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        const isConfiguredAdmin = !!user.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
-        if (profileError || !profile?.is_admin || !isConfiguredAdmin || !user.email_confirmed_at) {
-          await supabase.auth.signOut();
+        const response = await fetch('/api/admin/provision', { method: 'POST' });
+        if (!response.ok) {
+          await createClient().auth.signOut();
           router.replace('/admin/login');
           return;
         }
