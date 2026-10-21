@@ -14,6 +14,7 @@ export default function AdminProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [deletingProductId, setDeletingProductId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -135,11 +136,6 @@ export default function AdminProductsPage() {
           return;
         }
 
-        if (!productRows || productRows.length === 0) {
-          setProductList(products);
-          return;
-        }
-
         const { data: imageRows } = await supabase.from('product_images').select('*');
         const imageMap = new Map<string, string[]>();
 
@@ -234,10 +230,37 @@ export default function AdminProductsPage() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteProduct = (id: string, name: string) => {
-    if (confirm(`Are you sure you want to delete "${name}"?`)) {
+  const handleDeleteProduct = async (id: string, name: string) => {
+    if (deletingProductId || !confirm(`Are you sure you want to permanently delete "${name}"?`)) {
+      return;
+    }
+
+    setDeletingProductId(id);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+        .select('id')
+        .maybeSingle();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error('Product was not deleted. Check your admin access and try again.');
+      }
+
       setProductList((prev) => prev.filter((p) => p.id !== id));
+      await refreshProducts();
       showToast(`Product "${name}" deleted.`);
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      showToast(error instanceof Error ? error.message : 'Failed to delete product. Please try again.');
+    } finally {
+      setDeletingProductId(null);
     }
   };
 
@@ -497,7 +520,8 @@ export default function AdminProductsPage() {
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(p.id, p.name)}
-                      className="p-1.5 border border-line rounded text-rose-700 hover:bg-rose-50"
+                      disabled={deletingProductId !== null}
+                      className="p-1.5 border border-line rounded text-rose-700 hover:bg-rose-50 disabled:opacity-50"
                       title="Delete Product"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
