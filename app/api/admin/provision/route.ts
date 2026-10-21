@@ -1,6 +1,7 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getConfiguredAdminEmails } from '@/lib/admin-emails';
 
 export async function POST() {
   const authClient = await createClient();
@@ -10,10 +11,14 @@ export async function POST() {
     return NextResponse.json({ error: 'Please sign in again.' }, { status: 401 });
   }
 
-  const allowedEmails = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAIL || '')
-    .split(',')
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
+  const allowedEmails = getConfiguredAdminEmails(process.env.NEXT_PUBLIC_ADMIN_EMAIL);
+
+  if (allowedEmails.length === 0) {
+    return NextResponse.json(
+      { error: 'Admin access is not configured. Set NEXT_PUBLIC_ADMIN_EMAIL to the authorized email address.' },
+      { status: 503 }
+    );
+  }
 
   if (!allowedEmails.includes(user.email.toLowerCase())) {
     return NextResponse.json({ error: 'This account is not authorized for admin access.' }, { status: 403 });

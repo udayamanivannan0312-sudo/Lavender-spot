@@ -16,11 +16,9 @@ import {
   X,
   ShieldCheck,
 } from 'lucide-react';
+import { getConfiguredAdminEmails } from '@/lib/admin-emails';
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '')
-  .split(',')
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean);
+const ADMIN_EMAILS = getConfiguredAdminEmails(process.env.NEXT_PUBLIC_ADMIN_EMAIL);
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
