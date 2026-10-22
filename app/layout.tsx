@@ -5,8 +5,8 @@ import AnnouncementBar from '@/components/AnnouncementBar';
 import Header from '@/components/Header';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import Toast from '@/components/Toast';
-import GoogleAdSenseScript from '@/components/GoogleAdSenseScript';
 import { siteUrl } from '@/lib/site';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -87,7 +87,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <GoogleAdSenseScript />
+        <Script
+          id="google-adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6339284570872258"
+          strategy="beforeInteractive"
+          crossOrigin="anonymous"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
