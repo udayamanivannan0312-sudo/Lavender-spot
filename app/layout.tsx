@@ -5,6 +5,7 @@ import AnnouncementBar from '@/components/AnnouncementBar';
 import Header from '@/components/Header';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import Toast from '@/components/Toast';
+import GoogleAdSenseScript from '@/components/GoogleAdSenseScript';
 import { siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -86,6 +87,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <GoogleAdSenseScript />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
