@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { User, Mail, Lock } from 'lucide-react';
+import { siteUrl } from '@/lib/site';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -35,12 +36,14 @@ export default function SignupPage() {
 
     try {
       const supabase = createClient();
+      const callbackUrl = new URL('/auth/callback', siteUrl);
+      callbackUrl.searchParams.set('next', '/account');
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
           data: { name },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=%2Faccount`,
+          emailRedirectTo: callbackUrl.toString(),
         },
       });
 

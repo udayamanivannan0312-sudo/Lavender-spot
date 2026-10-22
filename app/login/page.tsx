@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Lock, Mail } from 'lucide-react';
+import { siteUrl } from '@/lib/site';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function LoginPage() {
       const supabase = createClient();
       const redirect = new URLSearchParams(window.location.search).get('redirect');
       const destination = redirect?.startsWith('/') && !redirect.startsWith('//') ? redirect : '/account';
-      const callbackUrl = new URL('/auth/callback', window.location.origin);
+      const callbackUrl = new URL('/auth/callback', siteUrl);
       callbackUrl.searchParams.set('next', destination);
       callbackUrl.searchParams.set('provider', 'google');
 
